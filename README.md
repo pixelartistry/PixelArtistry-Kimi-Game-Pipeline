@@ -2,9 +2,6 @@
 
 Rebuild the setup from my video **"I Created My Own Game with Kimi K3.1 Using Only Local 3D AI (Godot + Blender)"**: Kimi K3.1 Pro in Kimi Code controls ComfyUI, Blender and Godot through MCP, and every image and 3D asset is generated locally on Windows.
 
-> [!NOTE]
-> This video is sponsored by Moonshot AI, the company behind Kimi. The guide and my opinions are my own.
-
 ▶ **The full story, with screenshots:** https://pixel-artistry.com/blog/kimi-game-pipeline/
 ▶ **Full guide:** https://pixelartistry.github.io/PixelArtistry-Kimi-Game-Pipeline/
 ▶ **Video:** TODO: add the video link · [PixelArtistry on YouTube](https://www.youtube.com/@PixelArtistry_)
