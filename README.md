@@ -41,6 +41,9 @@ The only step I did by hand was rigging and animating the hero, in [ActionForge]
 
 ## Quick start
 
+> [!IMPORTANT]
+> **No ComfyUI yet?** Start with my **[TRELLIS.2 Installation Guide](https://pixel-artistry.com/Trellis2InstallationGuide)**. It walks you through ComfyUI-Easy-Install and TRELLIS.2 step by step, and the workflows in this repo build on that setup.
+
 1. Install the Kimi Code CLI (PowerShell), log in, and pick **K3.1 Pro** with `/model`:
    ```powershell
    irm https://code.kimi.com/kimi-code/install.ps1 | iex
