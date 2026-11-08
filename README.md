@@ -8,7 +8,7 @@ Rebuild the setup from my video **"I Created My Own Game with Kimi K3.1 Using On
 ▶ **Full guide:** https://pixelartistry.github.io/PixelArtistry-Kimi-Game-Pipeline/
 ▶ **Video:** TODO: add the video link · [PixelArtistry on YouTube](https://www.youtube.com/@PixelArtistry_)
 
-![The finished game: Rowan in the village of Briarwood](docs/images/final-01-village.jpg)
+![The finished game: Rowan against the Briarheart Guardian](docs/images/cover-boss-fight.jpg)
 
 ## From concept to game
 
@@ -79,7 +79,7 @@ The game project and the generated assets are not part of this repo; only screen
 
 ## Licences
 
-The models have their own licences. The weights of **Qwen Image 2.1** (Qwen Research License) and **FLUX.2 [klein] base 9B**, used by UltraTex (FLUX Non-Commercial License), are non-commercial, but the images and textures you generate can be used commercially: BFL's licence says so, and Qwen [confirmed on X](https://x.com/QwenDevs/status/2101917379785838660) that outputs aren't part of the licensed materials. Details are on the [ComfyUI page](https://pixelartistry.github.io/PixelArtistry-Kimi-Game-Pipeline/comfyui.html#licences).
+The models have their own licences. The weights of **Qwen Image 2.1** (Qwen Research License) and **FLUX.2 [klein] base 9B**, used by UltraTex (FLUX Non-Commercial License), are non-commercial, but the images and textures you generate can be used commercially: BFL's licence says so, and Qwen [confirmed on X](https://x.com/QwenDevs/status/2101917379785838660) that outputs aren't part of the licensed materials. I'm not a lawyer, so read the licences yourself and make your own call before using the results commercially. Details are on the [ComfyUI page](https://pixelartistry.github.io/PixelArtistry-Kimi-Game-Pipeline/comfyui.html#licences).
 
 Node packs by **MostAadTech** ([GitHub](https://github.com/Mstafa-awad) · [YouTube](https://www.youtube.com/@MostAadTech)): WTiVo, LODTailor, Quad Reconstruct, Memory Cleaner and the UltraTex GGUF nodes. Please support him.
 
