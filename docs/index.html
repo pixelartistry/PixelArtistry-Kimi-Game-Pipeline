@@ -1,0 +1,89 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kimi Game Pipeline · PixelArtistry</title>
+<meta name="description" content="Rebuild my setup: Kimi K3.1 Pro in Kimi Code drives ComfyUI, Blender and Godot through MCP, with every asset generated locally.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="inner">
+  <a class="brand" href="index.html">Pixel<span>Artistry</span> · Kimi Game Pipeline</a>
+  <nav>
+    <a href="index.html" aria-current="page">Overview</a>
+    <a href="setup.html">Kimi &amp; MCP setup</a>
+    <a href="comfyui.html">ComfyUI</a>
+    <a href="prompts.html">Prompts</a>
+    <a href="tips.html">Tips &amp; links</a>
+  </nav>
+</div></header>
+
+<main>
+<h1>Build a game with Kimi K3.1 and local 3D AI</h1>
+<p class="lead">This is the setup from my video <a href="https://www.youtube.com/@PixelArtistry_">"I Created My Own Game with Kimi K3.1 Using Only Local 3D AI (Godot + Blender)"</a>. Kimi K3.1 Pro runs in the Kimi Code terminal and controls ComfyUI, Blender and Godot through MCP. Every image and 3D asset is generated on my own PC.</p>
+
+<h2 id="pipeline">What the pipeline does</h2>
+<div class="diagram" role="img" aria-label="Pipeline: Kimi K3.1 Pro in Kimi Code controls four steps through MCP: concept images and image-to-3D in ComfyUI, cleanup in Blender, and the game in Godot.">
+<svg viewBox="0 0 760 250" xmlns="http://www.w3.org/2000/svg">
+  <defs><marker id="ah" viewBox="0 0 10 10" refX="9" refY="5" markerWidth="7" markerHeight="7" orient="auto"><path class="head" d="M0,0 L10,5 L0,10 z"/></marker></defs>
+  <rect class="box" x="230" y="10" width="300" height="56" rx="10"/>
+  <text class="label" x="380" y="35" text-anchor="middle">Kimi K3.1 Pro · Kimi Code</text>
+  <text class="sub" x="380" y="54" text-anchor="middle">reads my prompts, drives the apps through MCP</text>
+  <path class="arrow" d="M300,66 L90,140" marker-end="url(#ah)"/>
+  <path class="arrow" d="M350,66 L280,140" marker-end="url(#ah)"/>
+  <path class="arrow" d="M410,66 L480,140" marker-end="url(#ah)"/>
+  <path class="arrow" d="M460,66 L670,140" marker-end="url(#ah)"/>
+  <rect class="box" x="10" y="144" width="160" height="80" rx="10"/>
+  <text class="label" x="90" y="174" text-anchor="middle">1 · Concepts</text>
+  <text class="sub" x="90" y="194" text-anchor="middle">Qwen Image 2.1</text>
+  <text class="sub" x="90" y="210" text-anchor="middle">ComfyUI</text>
+  <rect class="box" x="200" y="144" width="160" height="80" rx="10"/>
+  <text class="label" x="280" y="174" text-anchor="middle">2 · Image to 3D</text>
+  <text class="sub" x="280" y="194" text-anchor="middle">TRELLIS.2 / Pixal3D</text>
+  <text class="sub" x="280" y="210" text-anchor="middle">+ UltraTex · ComfyUI</text>
+  <rect class="box" x="400" y="144" width="160" height="80" rx="10"/>
+  <text class="label" x="480" y="174" text-anchor="middle">3 · Cleanup</text>
+  <text class="sub" x="480" y="194" text-anchor="middle">scale, pivot, collision</text>
+  <text class="sub" x="480" y="210" text-anchor="middle">Blender</text>
+  <rect class="box" x="590" y="144" width="160" height="80" rx="10"/>
+  <text class="label" x="670" y="174" text-anchor="middle">4 · The game</text>
+  <text class="sub" x="670" y="194" text-anchor="middle">level, gameplay, tests</text>
+  <text class="sub" x="670" y="210" text-anchor="middle">Godot 4</text>
+  <path class="arrow" d="M170,184 L196,184" marker-end="url(#ah)"/>
+  <path class="arrow" d="M360,184 L396,184" marker-end="url(#ah)"/>
+  <path class="arrow" d="M560,184 L586,184" marker-end="url(#ah)"/>
+</svg>
+</div>
+<ol class="steps">
+  <li><strong>Concept images:</strong> Kimi writes the image prompts from the game design and generates one clean image per asset with Qwen Image 2.1 in ComfyUI.</li>
+  <li><strong>Image to 3D:</strong> each image goes through TRELLIS.2 (or Pixal3D), is made watertight, reduced to a low-poly game mesh and textured with UltraTex, all in one ComfyUI workflow that Kimi optimized for game assets.</li>
+  <li><strong>Blender cleanup:</strong> Kimi works in the open Blender window: real-world size, pivot at the base, facing, collision meshes, export to GLB.</li>
+  <li><strong>Godot:</strong> Kimi builds the level, the camera, combat, monsters, loot, the boss and the HUD, and writes an automated playtest that plays the game by itself.</li>
+</ol>
+<p>The hero was the one thing I did by hand: I rigged and animated it in <a href="https://actionforge.app">ActionForge</a>. Everything else was done by Kimi from my prompts.</p>
+
+<h2 id="hardware">Hardware</h2>
+<ul>
+  <li>Windows 10 or 11 and an NVIDIA RTX GPU.</li>
+  <li><strong>8 GB of VRAM or more; 12 GB or more is comfortable.</strong> The 3D steps peaked at about 7–9 GB in my tests (the cottage at 8.8 GB, 7.0 GB at the lowest settings). Kimi lowered every setting it could; the peak sits in a step with no settings. I built the game on an RTX 5080 with 16 GB.</li>
+  <li>32 GB of system RAM recommended, and a lot of free disk space for the models (around 26 GB for the 3D models alone, plus the Qwen models).</li>
+  <li>Kimi itself runs in the cloud: you need a <a href="https://www.kimi.com/membership/pricing">Kimi plan</a> that includes K3.1 Pro. Prompts, code, logs and the screenshots Kimi looks at are sent to Moonshot; the generation, Blender and Godot stay on your PC.</li>
+</ul>
+
+<h2 id="start">Where to start</h2>
+<div class="cards">
+  <div class="card"><h3><a href="setup.html">1 · Kimi &amp; MCP setup</a></h3>Install Kimi Code, select K3.1 Pro, and connect ComfyUI, Blender and Godot.</div>
+  <div class="card"><h3><a href="comfyui.html">2 · ComfyUI</a></h3>The node packs, models and my four workflows, with what Kimi changed.</div>
+  <div class="card"><h3><a href="prompts.html">3 · Prompts</a></h3>Every prompt I used, in build order, plus a reusable rules block.</div>
+  <div class="card"><h3><a href="tips.html">4 · Tips &amp; links</a></h3>What worked and what didn't when working with Kimi.</div>
+</div>
+
+<p class="note">The video is sponsored by Moonshot AI, the company behind Kimi. This guide and my opinions are my own.</p>
+</main>
+
+<footer><div class="inner">
+  Made by <a href="https://www.youtube.com/@PixelArtistry_">PixelArtistry</a> · <a href="https://github.com/pixelartistry/PixelArtistry-Kimi-Game-Pipeline">GitHub repo</a>
+</div></footer>
+</body>
+</html>

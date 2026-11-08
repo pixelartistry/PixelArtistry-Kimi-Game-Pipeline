@@ -1,0 +1,126 @@
+:root {
+  --accent: #ff6a19;
+  --accent-hover: #ff8442;
+  --bg: #faf8f4;
+  --surface: #ffffff;
+  --surface-2: #f2eee6;
+  --border: #d6d0c5;
+  --text: #1b1a17;
+  --muted: #6d665c;
+  --code-bg: #1c1c1c;
+  --code-text: #f2eee6;
+  --todo-bg: #fff3c4;
+  --todo-border: #e0b400;
+  --warn-bg: #fff0e6;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #141414;
+    --surface: #1c1c1c;
+    --surface-2: #232220;
+    --border: #3a3732;
+    --text: #f2eee6;
+    --muted: #a39c92;
+    --code-bg: #0e0e0e;
+    --todo-bg: #3a3112;
+    --todo-border: #c9a100;
+    --warn-bg: #2e1d12;
+  }
+}
+
+* { box-sizing: border-box; }
+html { -webkit-text-size-adjust: 100%; }
+body {
+  margin: 0;
+  background: var(--bg);
+  color: var(--text);
+  font: 16px/1.6 system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+}
+a { color: var(--accent); }
+a:hover { color: var(--accent-hover); }
+
+header.site {
+  background: var(--surface);
+  border-bottom: 3px solid var(--accent);
+}
+header.site .inner, main, footer .inner {
+  max-width: 900px;
+  margin: 0 auto;
+  padding: 0 16px;
+}
+header.site .inner {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 8px 20px;
+  padding-top: 12px;
+  padding-bottom: 12px;
+}
+.brand { font-weight: 700; color: var(--text); text-decoration: none; }
+.brand span { color: var(--accent); }
+nav { display: flex; flex-wrap: wrap; gap: 4px 16px; }
+nav a { color: var(--muted); text-decoration: none; font-size: 15px; }
+nav a:hover, nav a[aria-current="page"] { color: var(--accent); }
+
+main { padding-top: 24px; padding-bottom: 48px; }
+h1 { font-size: 1.9rem; line-height: 1.25; margin: 0.4em 0; }
+h2 { font-size: 1.4rem; margin-top: 2em; padding-top: 0.4em; border-top: 1px solid var(--border); }
+h3 { font-size: 1.1rem; margin-top: 1.6em; }
+.lead { font-size: 1.1rem; color: var(--muted); }
+
+code { font-family: ui-monospace, Consolas, "Cascadia Mono", monospace; font-size: 0.92em; }
+:not(pre) > code { background: var(--surface-2); padding: 0.1em 0.35em; border-radius: 4px; overflow-wrap: anywhere; }
+pre {
+  position: relative;
+  background: var(--code-bg);
+  color: var(--code-text);
+  padding: 14px 16px;
+  border-radius: 8px;
+  overflow-x: auto;
+  line-height: 1.45;
+  font-size: 14px;
+}
+pre { padding-top: 36px; }
+pre.prompt { white-space: pre-wrap; overflow-wrap: anywhere; }
+.copy {
+  position: absolute; top: 8px; right: 8px;
+  background: var(--accent); color: #141414; border: 0; border-radius: 5px;
+  padding: 3px 9px; font-size: 12px; font-weight: 600; cursor: pointer;
+}
+.copy:hover { background: var(--accent-hover); }
+
+.table-wrap { overflow-x: auto; }
+table { border-collapse: collapse; width: 100%; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 7px 10px; border-bottom: 1px solid var(--border); }
+th { background: var(--surface-2); }
+
+.note, .todo, .warn {
+  border-left: 4px solid var(--accent);
+  background: var(--surface);
+  padding: 10px 14px;
+  border-radius: 6px;
+  margin: 1em 0;
+}
+.todo { background: var(--todo-bg); border-color: var(--todo-border); }
+.todo::before { content: "TODO: "; font-weight: 700; }
+.warn { background: var(--warn-bg); }
+
+.diagram { margin: 1.5em 0; }
+.diagram svg { width: 100%; height: auto; display: block; }
+.diagram .box { fill: var(--surface); stroke: var(--accent); stroke-width: 2; }
+.diagram .label { fill: var(--text); font: 600 15px system-ui, sans-serif; }
+.diagram .sub { fill: var(--muted); font: 12px system-ui, sans-serif; }
+.diagram .arrow { stroke: var(--accent); stroke-width: 2.5; fill: none; }
+.diagram .head { fill: var(--accent); }
+
+.cards { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 12px; }
+.card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
+.card h3 { margin-top: 0; }
+
+ol.steps > li { margin-bottom: 0.6em; }
+.toc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; }
+.toc ol { margin: 0.3em 0; padding-left: 1.3em; }
+
+footer { border-top: 1px solid var(--border); color: var(--muted); font-size: 14px; }
+footer .inner { padding-top: 16px; padding-bottom: 32px; }

@@ -1,0 +1,221 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Prompts · Kimi Game Pipeline</title>
+<meta name="description" content="The prompts I gave Kimi K3.1 Pro to build a small Godot game, in build order.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="inner">
+  <a class="brand" href="index.html">Pixel<span>Artistry</span> · Kimi Game Pipeline</a>
+  <nav>
+    <a href="index.html">Overview</a>
+    <a href="setup.html">Kimi &amp; MCP setup</a>
+    <a href="comfyui.html">ComfyUI</a>
+    <a href="prompts.html" aria-current="page">Prompts</a>
+    <a href="tips.html">Tips &amp; links</a>
+  </nav>
+</div></header>
+
+<main>
+<h1>The prompts, in build order</h1>
+<p class="lead">These are the prompts I gave Kimi K3.1 Pro to build the game, from the first idea to the last fix. I've removed my own folder paths and notes, so you can reuse them for your own game.</p>
+
+<div class="note">
+  <strong>How I use them:</strong> save each prompt as a Markdown file in your project folder, for example <code>prompts/05_trellis_props.md</code>, and type <em>"Read prompts/05_trellis_props.md and do the task."</em> in Kimi. A long prompt pasted straight into the terminal can arrive cut off. Paste the <a href="#rules">rules block</a> at the end of every prompt.
+</div>
+
+<p>All prompts use the same project layout. Replace <code>&lt;PROJECT&gt;</code> with your own folder:</p>
+<pre><code>&lt;PROJECT&gt;\
+  game-design.md        ← step 1
+  style-reference.png   ← an image of the look you want
+  concepts\             ← step 2 (concept images)
+  hero\                 ← step 3
+  props\raw\            ← step 5 (raw meshes from ComfyUI)
+  props\blend\          ← step 6 (Blender files)
+  game\                 ← steps 7–10 (the Godot project)
+  prompts\              ← these prompts as .md files</code></pre>
+
+<div class="toc">
+  <strong>Contents</strong>
+  <ol>
+    <li><a href="#rules">The rules block (add it to every prompt)</a></li>
+    <li><a href="#p1">Game design</a></li>
+    <li><a href="#p2">Concept images</a></li>
+    <li><a href="#p3">The hero</a></li>
+    <li><a href="#p4">Optimize the 3D workflow</a></li>
+    <li><a href="#p5">Generate the props with TRELLIS.2</a></li>
+    <li><a href="#p6">Clean up in Blender</a></li>
+    <li><a href="#p7">Build the level in Godot</a></li>
+    <li><a href="#p8">Polish</a></li>
+    <li><a href="#p9">Gameplay and the self-playing test</a></li>
+    <li><a href="#p10">The sword fix</a></li>
+  </ol>
+</div>
+
+<h2 id="rules">The rules block</h2>
+<p>I added this to the end of every task. It keeps Kimi from "fixing" my setup on its own, and it makes sure every run ends with a summary I can check.</p>
+<pre class="prompt"><code>## Rules
+- Use only the tools, nodes and models that are already installed. Don't install anything, download models, restart ComfyUI or Blender, kill processes, edit custom-node code or change temp paths.
+- ComfyUI runs on port 8188. Queue one job at a time.
+- Only write inside &lt;PROJECT&gt;. Don't change my source files; make new files instead.
+- If something blocks you, stop and tell me what and why. Don't work around it.
+- Measure, don't guess: check sizes, triangle counts, positions and timings with real numbers.
+- Look at every visual result yourself (renders or screenshots) before you call it done.
+- Don't end your turn while a ComfyUI job, Blender or Godot is still running. Wait for it and check the result.
+- Finish with a short summary: what you did, where the files are, and what failed.</code></pre>
+
+<h2 id="p1">1 · Game design</h2>
+<p>I started with one reference image of the look I wanted and asked for a design that fits a day of work.</p>
+<div class="todo">This prompt is rebuilt from Kimi's answer (<code>game-design.md</code>) and my test plan, because I don't have the exact text I typed. Replace it with the original if you have it.</div>
+<pre class="prompt"><code>I want to build a tiny 3D action game in Godot 4.7 in about a day. Every 3D asset will be generated locally: a concept image with Qwen Image 2.1, then image-to-3D in ComfyUI, then cleanup in Blender. The look I want is in style-reference.png.
+
+Write the design into game-design.md:
+1. Concept: camera, one small level and the core loop, controls, combat, loot, win and loss, and a simple HUD.
+2. An asset list of about 10 assets: the role of each, its real-world size in meters, and how it is animated in code (no skeletal animation for monsters and props).
+3. A shared Qwen Image 2.1 style prefix that matches the reference, plus a fixed framing text for clean image-to-3D input (one object, three-quarter view, plain background, no shadow, no text).
+4. One image prompt per asset.
+5. The main risks and a fallback for each.
+
+Keep the scope realistic: one level, no inventory, no dialogue, no multiplayer. Don't create any other files yet.</code></pre>
+
+<h2 id="p2">2 · Concept images</h2>
+<p>Kimi writes every image prompt first, I read them, then it runs them in ComfyUI.</p>
+<div class="todo">Rebuilt from my notes and the concept workflow, not the exact text I typed.</div>
+<pre class="prompt"><code>Read game-design.md. Make one concept image per asset with Qwen Image 2.1 in ComfyUI, using the workflow Kimi_Concept_QwenImage21_API.json.
+
+1. First write the full prompt for every asset (style prefix + asset description + framing text) into concepts/prompts.md, and show me the list.
+2. Then generate them, one job at a time: 1024 × 1024, square, three-quarter front view, one isolated object, plain light background, no ground shadow, no text.
+3. Make 2–3 takes per asset. Look at each one yourself and reject takes with cut-off parts, cast shadows, extra objects, very thin parts or a confusing back side. Image-to-3D builds exactly what the picture shows, so the shape must be clear and deep, not a flat front view.
+4. Save the best take per asset as concepts/NN_name.png, and list the rejected ones with the reason in concepts/review.md.</code></pre>
+
+<h2 id="p3">3 · The hero</h2>
+<p>The first T-pose, generated from text, lost the chunky proportions of the concept. Editing the approved concept with Qwen Image Edit 2511 kept the character the same. This prompt does it that way from the start. I rigged and animated the hero myself afterwards, in ActionForge.</p>
+<pre class="prompt"><code>Briarwood needs a hero that matches the props. Read game-design.md first (the hero's role, the camera and the style prefix).
+
+1. Design: generate 4 different hero designs with the shared style prefix: a cute, friendly young forest hero with the same hand-painted look, rounded shapes and warm palette as the props. Pick the one that reads best from the game camera, and keep all four for me.
+2. T-pose: don't generate the T-pose from text. Edit the chosen concept with Qwen Image Edit 2511 (workflow Kimi_T3e_Rowan_QwenEdit2511.json), so the character stays the same and only the pose changes: facing the camera, arms straight out to the sides, hands open, feet a little apart, plain background, no ground shadow. Say in the edit prompt that the proportions must stay exactly as in the concept (head size, arm and leg length, hands, boots, hood). No weapon, cape or anything that bridges body parts.
+3. Make 3–4 candidates with different seeds. Compare each with the concept: head height as a share of total height, arm length, leg length. Pick the closest clean T-pose.
+4. 3D: generate it with the TRELLIS.2 low-poly workflow at about 20,000 triangles. It must be one connected mesh with UVs and textures. Review it in Blender from the front, side and back. Make the sword as a separate prop at about 1,500 triangles.
+5. Don't rig or animate it. I do that myself.
+
+Deliver hero/concepts/, hero/raw/hero_tpose.glb, hero/raw/hero_weapon.glb with renders, and hero/README.md with the prompts, the numbers and notes for rigging.</code></pre>
+
+<h2 id="p4">4 · Optimize the 3D workflow</h2>
+<p>Kimi started from my existing prop workflow and made a game-asset version of it. What it changed is in the <a href="comfyui.html#changes">workflow table</a>.</p>
+<pre class="prompt"><code>Turn my selected concept images into game-ready, low-poly 3D props for Godot 4.7. Start from my prop workflow PixelArtistry_05p_Image_to_LowPoly_Prop_UltraTex.json and optimize it for game assets, testing every change yourself.
+
+- Don't change the original. Save your version as workflows/Kimi/Kimi_LowPoly_GameAsset.json.
+- Keep UltraTex for the textures.
+- Target: stylized low-poly props. Propose a triangle budget per asset type. From my experience, thin parts collapse below about 1,500 triangles, and 10,000 is plenty. As few separate pieces as possible, UVs, baked base color and normal maps at 1024 or 2048, GLB output.
+
+Method:
+1. Baseline first: run my unmodified workflow once on each test image and log the numbers.
+2. Test images: concepts/01_moss_slime.png (round, organic) and concepts/06_rustic_fence.png (thin parts).
+3. Then at most 6 optimization runs. Change one thing at a time.
+4. For every run, log the settings, time, peak VRAM, triangle count and number of pieces. Render each result and judge it yourself: silhouette, holes, texture.
+5. Pick the best settings and explain every change in a short table.
+
+Deliver the workflow so it opens in the ComfyUI editor, with a note node that explains the key settings, plus a table of all runs and your recommendation. Don't process the other assets yet.</code></pre>
+
+<h2 id="p5">5 · Generate the props with TRELLIS.2</h2>
+<pre class="prompt"><code>Generate the remaining game props with your workflow, using TRELLIS.2 instead of Pixal3D for the geometry. Read game-design.md for what each asset is.
+
+1. Speed test: run a fast sampling profile (12 structure / 12 shape / 8 upsample steps) and the default profile on one asset. Compare time, peak VRAM, triangles, pieces and renders. Only call it faster if both runs had the same cached nodes. Keep the fast profile only if it keeps the silhouette and thin parts.
+2. Save the chosen settings as workflows/Kimi/Kimi_LowPoly_GameAsset_TRELLIS2.json, with a note node.
+3. Generate the props one at a time with these final triangle budgets: 10k for the boss and the cottage, 6k for the tree, 4k for small pickups, 2k for the boulder. Skip the terrain; I build it by hand in Blender.
+4. Every input image must be square (1024 × 1024), with ImageCropToMask width equal to height. Check this before you queue a job. Use upsample resolution 1024: higher values can hang on big props.
+5. Review each result in Blender: triangles, pieces, holes, UVs, textures, renders from three views. The depth of the mesh must be at least 80% of its width; if it's a flat slab, say so. If a result is broken, retry once with one changed setting.
+
+Deliver props/raw/NN_name.glb with a preview render each, and props/raw/README.md with a table: asset, profile, time, peak VRAM, triangles, pieces, verdict and repairs needed in Blender.</code></pre>
+
+<h2 id="p6">6 · Clean up in Blender</h2>
+<p>This one runs in the open Blender window through the Blender MCP, so you can watch every step.</p>
+<pre class="prompt"><code>Turn the raw meshes in props/raw/ into clean, game-ready GLBs for Godot 4.7. Read game-design.md for each asset's real-world size, and props/raw/README.md for the repairs.
+
+Do it in the open Blender window through the Blender MCP, one asset at a time: import it, frame it in Material Preview, clean it up step by step, and show the result before you export.
+
+For every prop:
+- Units in meters. Scale it to the size in the game design.
+- Origin at the bottom center, sitting on the ground (Z = 0).
+- Front faces Blender −Y, so it faces +Z in Godot.
+- Apply all transforms. Normals facing out.
+- Remove floating fragments and hidden inner faces. Keep the UVs and textures. Only decimate if it's over budget.
+- One material per asset, named &lt;asset&gt;_mat, high roughness, no metallic.
+- Static props get a simple collision mesh as a separate object with the suffix -colonly: a box for buildings and fences, a convex hull for rocks, a cylinder around the tree trunk only. Monsters and pickups get none.
+
+Terrain: build it by hand from the layout in the game design (a slab with gently beveled edges, broad color regions for grass and a dirt path, vertex colors, no grass cards) plus a -colonly collision of the walkable top.
+
+Export each prop to game/assets/props/&lt;name&gt;.glb and the terrain to game/assets/level/terrain.glb. Save the .blend files in props/blend/. Render a lineup of all props next to a 1.8 m box, look at it, and fix any scale, facing or floating problem. Write props/README.md with size, triangles, pieces and collision per asset.</code></pre>
+
+<h2 id="p7">7 · Build the level in Godot</h2>
+<pre class="prompt"><code>Build the playable world in a new Godot 4.7 project in game/. Read game-design.md (section 1) for the layout, camera and style, and props/README.md for the cleaned assets.
+
+Open the project in the Godot editor through the Godot MCP and keep it open while you work. Run the game after each round.
+
+1. Level scene (scenes/level.tscn) on the terrain: the village edge with the cottage, fences and the start point; the forest path lined with trees and boulders (instances with small rotation and ±10% scale, so repeats don't look copied); the clearing with the boss. Marked spawn points for the monsters, a few sample pickups, and invisible walls at the level edge.
+2. Look: a warm sun with soft shadows, a light teal sky and ambient light, a mild tonemap. Keep the cozy, hand-painted feel of style-reference.png. No heavy post effects.
+3. Camera: as in the design, following the hero smoothly.
+4. Hero: use a stand-in character for now, and build the player scene so the model can be swapped later without changing the movement code: the model as one child node, the animation names in one place. WASD movement relative to the camera, face the mouse, jump on Space. Props and the level edge block movement. No combat yet.
+
+Check your work: fix every error and warning. Add a debug script that saves screenshots of the running game with get_viewport().get_texture().get_image().save_png() (village, path, clearing, hero walking). Look at them and improve the composition, lighting and placement, up to 3 rounds. Keep the placement in a data file (for example layout_manifest.json) and build the level from it.
+
+Deliver: the game runs without errors, the hero can walk from the village to the clearing, and game/README.md explains the controls, the scene structure and what is still a placeholder.</code></pre>
+
+<h2 id="p8">8 · Polish</h2>
+<p>I played the level and wrote down everything that looked or felt wrong. Kimi's own screenshot reviews had passed all of these, so this list came from me. Use your own list here.</p>
+<pre class="prompt"><code>Review the level and fix how it looks and feels. Read game/README.md and look at the latest screenshots. The style target is the cozy, hand-painted look of the props.
+
+What I found when I played it:
+1. The hero is tiny on screen. Zoom the camera in until the hero reads clearly, and check that the path ahead is still readable.
+2. The jump is too high (taller than the hero). Bring it to about 0.6–0.8 m and keep the jump animations in sync.
+3. Movement feels slow. Raise the speed and the run animation speed together, so the feet don't slide.
+4. The colors are too strong: the path is saturated orange and the grass very bright green. Check the vertex-color color space (sRGB vs linear) first, then tone the terrain to match the props.
+5. The boulders look washed out. Check their material and the lighting.
+6. The boss reads too small. Scale it up about 1.3–1.5× and keep it grounded.
+7. The pickups are hard to see. Make them about 2× bigger, with a soft glow or rim.
+8. The trees stand in rigid rows and the level floats in an empty void. Loosen the placement (keep the path and the fight areas clear) and add a forest edge or a dark ground around the level.
+
+Change only the look, camera, movement tuning and placement; no gameplay yet. Rebuild the level from the layout file. Take before and after screenshots of the village, path, clearing, the hero and a pickup close-up, up to 3 review rounds. Update game/README.md with the new values.</code></pre>
+
+<h2 id="p9">9 · Gameplay and the self-playing test</h2>
+<p>The automated playtest is the part I liked most: Kimi wrote a bot that plays the whole level with real inputs and checks that everything works.</p>
+<pre class="prompt"><code>Add the gameplay from the game design, so the level can be played from the village to the defeated boss. Read game-design.md (section 1 and the asset table) and game/README.md.
+
+Build, in this order:
+1. Hero combat: a three-hit combo from the hero's sword clips, using the real clip lengths for the hit windows and the combo buffer. Block reduces damage. 100 HP, about 0.6 s of protection after a hit, the death clip at 0 HP.
+2. Monsters: simple state machines (idle, pursue, telegraph, attack, recover, hit, die) for each monster type in the design, with the code animation from the design (squash and stretch, hit flash, dissolve on death). Use the spawn markers. Check each marker: monsters must spawn on open, walkable ground.
+3. Loot: drops and pickups as in the design; pickups fly toward the hero when close.
+4. Boss: wakes when the hero enters the clearing, with readable ground telegraphs and a faster second phase below 50% HP.
+5. HUD: as the design describes.
+6. Win and loss: a small results panel (time, kills, pickups) when the boss dies; at 0 HP, an immediate restart with the encounters reset.
+If time runs short, finish 1–3 and the win/loss loop before you polish the boss. Keep the frame rate playable.
+
+Check your work: write an automated playtest that drives the real inputs (movement, mouse aim, attacks): clear each encounter, collect loot, beat the boss to the results screen, and also test losing and restarting. Use invulnerability or extra damage only inside the test, and say so in the README. Print a pass/fail line per check. Take screenshots of each encounter, a pickup, both boss phases, the HUD, the results screen and the restart. The game runs with no errors or warnings.
+
+Update game/README.md: controls, the combat numbers, each monster's behavior, the test results, and what is still missing.</code></pre>
+
+<h2 id="p10">10 · The sword fix</h2>
+<p>The sword took four rounds. Kimi first guessed a pivot and turned the sword around the wrong point. It got it right once the prompt said "measure, don't guess" and gave it numbers to check. This is the version that worked, written as one prompt.</p>
+<pre class="prompt"><code>The sword doesn't sit in the hero's hand: there is a gap between the handle and the fist, and the blade points the wrong way. Fix it, and measure, don't guess.
+
+1. Measure the hand: find the fist center in the hand bone's space, on the posed, skinned hand in the actual animations, not the rest pose. Find the channel between the palm and the curled fingers.
+2. Measure the sword: the handle's center line and center point, and the handle radius. If the handle is too thick for the fist to close around it, make a new sword file with only the grip slimmed (keep the blade, guard, pommel, UVs and texture).
+3. Place the handle center in the fist center (at most 2 cm off), with the handle running through the fist.
+4. Then choose only the blade direction around that axis: it leaves the fist on the thumb side, the normal way to hold a sword. Test candidates by checking blade vertices against the body mesh at nine frames of each clip. The goal is no contact in idle, walk, run and block. Report contacts in extreme attack poses honestly.
+5. Check per clip: in block the blade tip is above the hand and in front of the body; in attacks the tip leads the swing; in idle and locomotion it doesn't point at the ground.
+6. Never mirror the sword (positive determinant only). Keep its scale.
+7. Add these checks to the playtest. Take close-ups of the hand with the sword in idle, run, both attacks and block, from the front and the side, and look at them yourself: the sword must visibly sit in the fist.
+
+Finish with the measured numbers: grip distance, handle radius, hand vertices inside the handle, and the result of each check per clip.</code></pre>
+
+</main>
+
+<footer><div class="inner">
+  Made by <a href="https://www.youtube.com/@PixelArtistry_">PixelArtistry</a> · <a href="https://github.com/pixelartistry/PixelArtistry-Kimi-Game-Pipeline">GitHub repo</a>
+</div></footer>
+<script src="assets/copy.js"></script>
+</body>
+</html>

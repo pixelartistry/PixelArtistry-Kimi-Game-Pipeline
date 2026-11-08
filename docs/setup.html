@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Kimi &amp; MCP Setup · Kimi Game Pipeline</title>
+<meta name="description" content="Install Kimi Code CLI, select K3.1 Pro and connect ComfyUI, Blender and Godot through MCP on Windows.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="inner">
+  <a class="brand" href="index.html">Pixel<span>Artistry</span> · Kimi Game Pipeline</a>
+  <nav>
+    <a href="index.html">Overview</a>
+    <a href="setup.html" aria-current="page">Kimi &amp; MCP setup</a>
+    <a href="comfyui.html">ComfyUI</a>
+    <a href="prompts.html">Prompts</a>
+    <a href="tips.html">Tips &amp; links</a>
+  </nav>
+</div></header>
+
+<main>
+<h1>Set up Kimi Code and the three MCP servers</h1>
+<p class="lead">Windows 10 or 11. At the end, Kimi K3.1 Pro can drive ComfyUI, Blender and Godot from one terminal.</p>
+
+<div class="toc"><strong>Contents</strong><ol>
+  <li><a href="#prereq">What to install first</a></li>
+  <li><a href="#kimi">Kimi Code CLI: install, log in, select K3.1 Pro</a></li>
+  <li><a href="#mcpjson">The mcp.json file</a></li>
+  <li><a href="#comfyui">ComfyUI MCP</a></li>
+  <li><a href="#blender">Blender MCP</a></li>
+  <li><a href="#godot">Godot MCP</a></li>
+  <li><a href="#check">Check that it works</a></li>
+  <li><a href="#trouble">Troubleshooting</a></li>
+</ol></div>
+
+<h2 id="prereq">1 · What to install first</h2>
+<ul>
+  <li><a href="https://git-scm.com/download/win">Git for Windows</a>: the Kimi Code CLI needs it on Windows.</li>
+  <li><a href="https://nodejs.org/en/download">Node.js LTS</a> (22 or newer): runs the ComfyUI and Godot MCP servers through <code>npx</code>.</li>
+  <li><a href="https://github.com/Tavris1/ComfyUI-Easy-Install">ComfyUI-Easy-Install</a> (or any recent ComfyUI) with the nodes and models from the <a href="comfyui.html">ComfyUI page</a>.</li>
+  <li><a href="https://www.blender.org/download/">Blender</a> (I used 5.1 for the live cleanup).</li>
+  <li><a href="https://godotengine.org/download/windows/">Godot 4.x</a> for Windows (I used 4.7). Unzip it anywhere; the zip contains a normal exe and a <code>_console.exe</code>.</li>
+</ul>
+
+<h2 id="kimi">2 · Kimi Code CLI</h2>
+<h3>Install</h3>
+<p>In PowerShell (from the <a href="https://moonshotai.github.io/kimi-code/en/guides/getting-started">official getting-started guide</a>):</p>
+<pre><code>irm https://code.kimi.com/kimi-code/install.ps1 | iex</code></pre>
+<p>Or with npm (Node.js 22.19 or newer):</p>
+<pre><code>npm install -g @moonshot-ai/kimi-code</code></pre>
+<p>Open a new terminal and check it:</p>
+<pre><code>kimi --version</code></pre>
+
+<h3>Log in</h3>
+<pre><code>kimi login</code></pre>
+<p>This starts a device-code login in your browser. You can also start <code>kimi</code> and type <code>/login</code> inside it.</p>
+<div class="warn">Don't show your screen or share the output of <code>kimi login</code> or <code>kimi web</code>: they can print codes or tokens for your account.</div>
+
+<h3>Select K3.1 Pro</h3>
+<p>Start Kimi in your project folder and pick the model:</p>
+<pre><code>cd &lt;PROJECT&gt;
+kimi</code></pre>
+<pre><code>/model</code></pre>
+<p>Choose <strong>K3.1 Pro</strong>. There is also <strong>K3.1 Pro Highspeed</strong>: it's faster, but it costs <strong>2× the usage</strong> of your plan. I used the normal K3.1 Pro for the whole build. Which models you see depends on your <a href="https://www.kimi.com/membership/pricing">Kimi plan</a>. If a new model is missing, run <code>/logout</code> and <code>/login</code> again.</p>
+
+<h2 id="mcpjson">3 · The mcp.json file</h2>
+<p>Kimi Code reads its MCP servers from <code>%USERPROFILE%\.kimi-code\mcp.json</code> (all projects). A <code>.kimi-code\mcp.json</code> inside a project folder applies only to that project. Here is my full file with placeholder paths. Each part is explained below.</p>
+<pre><code>{
+  "mcpServers": {
+    "comfyui": {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+        "-y",
+        "comfyui-mcp"
+      ],
+      "env": {
+        "COMFYUI_HOST": "127.0.0.1",
+        "COMFYUI_PORT": "8188",
+        "COMFYUI_PATH": "C:\\path\\to\\ComfyUI-Easy-Install\\ComfyUI"
+      }
+    },
+    "blender": {
+      "command": "uvx",
+      "args": ["blender-mcp"]
+    },
+    "godot": {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+        "-y",
+        "@coding-solo/godot-mcp"
+      ],
+      "env": {
+        "GODOT_PATH": "C:\\path\\to\\Godot_v4.7-stable_win64_console.exe"
+      }
+    }
+  }
+}</code></pre>
+<div class="note"><strong>Why <code>node.exe</code> plus <code>npx-cli.js</code>?</strong> On Windows, <code>npx</code> is a <code>.cmd</code> script, and some programs can't start it directly. Calling Node with npm's <code>npx-cli.js</code> runs the same <code>npx -y …</code> command and works everywhere. The paths above are the default Node.js install location; change them if you installed Node somewhere else. In JSON, every backslash is written twice.</div>
+
+<h2 id="comfyui">4 · ComfyUI MCP</h2>
+<p>Server: <a href="https://github.com/artokun/comfyui-mcp">comfyui-mcp</a>, started with <code>npx -y comfyui-mcp</code> (needs Node.js 22+).</p>
+<div class="table-wrap"><table>
+  <tr><th>Variable</th><th>What it is</th></tr>
+  <tr><td><code>COMFYUI_HOST</code></td><td>The address ComfyUI listens on. <code>127.0.0.1</code> for the same PC.</td></tr>
+  <tr><td><code>COMFYUI_PORT</code></td><td>The port ComfyUI runs on. If you leave it out, the server tries 8188 and then 8000.</td></tr>
+  <tr><td><code>COMFYUI_PATH</code></td><td>Your ComfyUI folder (the one with <code>models</code>, <code>input</code>, <code>output</code> and <code>user</code>), so Kimi can find models, workflows and results.</td></tr>
+</table></div>
+
+<h3>Start ComfyUI on that port</h3>
+<p>ComfyUI's default port is <strong>8188</strong>, so with the file above you just start ComfyUI as usual. To use another port (I used 8189, because another app already had 8188), add <code>--port</code> to the start command and put the same number into <code>COMFYUI_PORT</code>:</p>
+<pre><code>.\python_embeded\python.exe -I ComfyUI\main.py --windows-standalone-build --port 8189</code></pre>
+<p>In ComfyUI-Easy-Install, add the extra arguments in the start <code>.bat</code> at the end of the <code>python.exe … main.py</code> line, or with the "Startup arguments" option of its menu. Then open <code>http://127.0.0.1:8189</code> in your browser to check that it runs.</p>
+
+<h2 id="blender">5 · Blender MCP</h2>
+<p>Server: <a href="https://github.com/ahujasid/blender-mcp">ahujasid/blender-mcp</a>. It has two parts: an add-on inside Blender, and the MCP server that Kimi starts with <code>uvx</code>.</p>
+<div class="note">The project has been renamed to <strong>MCP for Blender</strong> (PyPI package <code>mcp-for-blender</code>). According to its README, <code>uvx blender-mcp</code> still works, and that's what my config uses. For a new setup you can also write <code>"args": ["mcp-for-blender"]</code>.</div>
+
+<h3>a) Install uv</h3>
+<p><code>uvx</code> comes with <a href="https://docs.astral.sh/uv/getting-started/installation/">uv</a>. In PowerShell:</p>
+<pre><code>powershell -ExecutionPolicy ByPass -c "irm https://astral.sh/uv/install.ps1 | iex"</code></pre>
+<p>or with winget:</p>
+<pre><code>winget install --id=astral-sh.uv -e</code></pre>
+<p>Open a new terminal and check it with <code>uvx --version</code>.</p>
+
+<h3>b) Install and enable the add-on</h3>
+<ol class="steps">
+  <li>Download <a href="https://github.com/ahujasid/blender-mcp/blob/main/addon.py"><code>addon.py</code></a> from the repo (on GitHub: <em>Download raw file</em>).</li>
+  <li>In Blender: <strong>Edit → Preferences → Add-ons → Install…</strong> (in Blender 4.2 and newer it's in the ▾ menu at the top right of the Add-ons page: <em>Install from Disk…</em>) and choose <code>addon.py</code>.</li>
+  <li>Tick the box next to <strong>Interface: MCP for Blender</strong>.</li>
+</ol>
+
+<h3>c) Start its server inside Blender</h3>
+<ol class="steps">
+  <li>In the 3D Viewport, press <kbd>N</kbd> to open the sidebar.</li>
+  <li>Open the <strong>MCP for Blender</strong> tab.</li>
+  <li>Click <strong>Connect to MCP server</strong>. It should show that it's connected on port <strong>9876</strong>. Newer versions of the add-on start this automatically when Blender opens.</li>
+</ol>
+<p>Keep Blender open while Kimi works. Only one MCP client should talk to Blender at a time: close other AI apps that use the same add-on.</p>
+
+<h2 id="godot">6 · Godot MCP</h2>
+<p>Server: <a href="https://github.com/Coding-Solo/godot-mcp">Coding-Solo/godot-mcp</a>, started with <code>npx -y @coding-solo/godot-mcp</code>.</p>
+<ul>
+  <li>Set <code>GODOT_PATH</code> to the <strong>console</strong> exe of Godot 4.x, for example <code>Godot_v4.7-stable_win64_console.exe</code>. The console version prints Godot's output to the terminal, so Kimi can read errors.</li>
+  <li>It lets Kimi launch the editor, run the project, read the debug output, and create or edit scenes.</li>
+  <li>It can't take screenshots. In my prompts, Kimi adds a small debug script to the game that saves screenshots with <code>get_viewport().get_texture().get_image().save_png()</code>.</li>
+</ul>
+
+<h2 id="check">7 · Check that it works</h2>
+<ol class="steps">
+  <li>Start ComfyUI, and Blender with the add-on server running.</li>
+  <li>Run <code>kimi doctor</code>. It checks Kimi's own config files (<code>config.toml</code> and <code>tui.toml</code>). It doesn't check <code>mcp.json</code>; that's what the next step is for.
+<pre><code>kimi doctor</code></pre></li>
+  <li>Start <code>kimi</code> in your project folder and type:
+<pre><code>/mcp</code></pre>
+  It shows the connection status of every server. <strong>comfyui</strong>, <strong>blender</strong> and <strong>godot</strong> should all be connected.</li>
+  <li>A quick test prompt: <em>"Use the ComfyUI MCP to show the system stats, list the objects in the open Blender scene, and tell me the Godot version."</em></li>
+</ol>
+
+<h2 id="trouble">8 · Troubleshooting</h2>
+<ul>
+  <li><strong>ComfyUI doesn't connect:</strong> the port in <code>COMFYUI_PORT</code> must match the port ComfyUI runs on. Open <code>http://127.0.0.1:&lt;port&gt;</code> in the browser. If nothing loads, ComfyUI isn't running on that port.</li>
+  <li><strong>Blender doesn't connect:</strong> the add-on's server isn't started. Press <kbd>N</kbd> → <em>MCP for Blender</em> → <em>Connect to MCP server</em>, then check <code>/mcp</code> again. Also check that <code>uvx</code> works in a new terminal.</li>
+  <li><strong>Godot doesn't connect:</strong> <code>GODOT_PATH</code> must point to the exe file itself, not to the folder or the zip. Use double backslashes in JSON.</li>
+  <li><strong>ComfyUI jobs fail with disk or temp errors:</strong> my C: drive was full (48 MB free), and the mesh nodes couldn't write their temp files. Free up space, or move ComfyUI's temp folder to another drive. Add this to the start command:
+<pre><code>--temp-directory D:\ComfyTemp</code></pre>
+  Some nodes also use Windows' own temp folder. Setting it in the start <code>.bat</code>, before the <code>python.exe</code> line, moves that too:
+<pre><code>set TEMP=D:\ComfyTemp
+set TMP=D:\ComfyTemp</code></pre>
+  Don't let Kimi patch the custom nodes' code to fix this. That's what it tried first.</li>
+  <li><strong>Asking Kimi to fix a connection:</strong> name the exact error and the server. When I wrote <em>"fix the broken MCP connection"</em>, Kimi worked on Blender, the one server that was working, and broke it. With the error message pasted in and the server named, it fixed <code>mcp.json</code> in minutes.</li>
+</ul>
+</main>
+
+<footer><div class="inner">
+  Made by <a href="https://www.youtube.com/@PixelArtistry_">PixelArtistry</a> · <a href="https://github.com/pixelartistry/PixelArtistry-Kimi-Game-Pipeline">GitHub repo</a>
+</div></footer>
+<script src="assets/copy.js"></script>
+</body>
+</html>

@@ -1,0 +1,32 @@
+{
+  "mcpServers": {
+    "comfyui": {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+        "-y",
+        "comfyui-mcp"
+      ],
+      "env": {
+        "COMFYUI_HOST": "127.0.0.1",
+        "COMFYUI_PORT": "8188",
+        "COMFYUI_PATH": "C:\\path\\to\\ComfyUI-Easy-Install\\ComfyUI"
+      }
+    },
+    "blender": {
+      "command": "uvx",
+      "args": ["blender-mcp"]
+    },
+    "godot": {
+      "command": "C:\\Program Files\\nodejs\\node.exe",
+      "args": [
+        "C:\\Program Files\\nodejs\\node_modules\\npm\\bin\\npx-cli.js",
+        "-y",
+        "@coding-solo/godot-mcp"
+      ],
+      "env": {
+        "GODOT_PATH": "C:\\path\\to\\Godot_v4.7-stable_win64_console.exe"
+      }
+    }
+  }
+}

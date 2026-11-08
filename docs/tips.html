@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Tips &amp; Links · Kimi Game Pipeline</title>
+<meta name="description" content="What worked when building a game with Kimi K3.1 Pro, and links.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="inner">
+  <a class="brand" href="index.html">Pixel<span>Artistry</span> · Kimi Game Pipeline</a>
+  <nav>
+    <a href="index.html">Overview</a>
+    <a href="setup.html">Kimi &amp; MCP setup</a>
+    <a href="comfyui.html">ComfyUI</a>
+    <a href="prompts.html">Prompts</a>
+    <a href="tips.html" aria-current="page">Tips &amp; links</a>
+  </nav>
+</div></header>
+
+<main>
+<h1>Tips for working with Kimi</h1>
+<p class="lead">What I learned building the game, mostly the hard way.</p>
+
+<h3>Give long prompts as a file</h3>
+<p>Save the task as a Markdown file in your project and type <em>"Read prompts/task.md and do the task."</em> When I pasted a long prompt into the terminal, only the last third arrived, and Kimi went off with no rules and no test images.</p>
+
+<h3>Let Kimi write the image prompts first</h3>
+<p>Ask for the full image prompts before anything is generated, read them, then let it run. Kimi wrote a shared style prefix and a framing text for clean image-to-3D input, and it reviewed its own concept images: it rejected 27 takes for shadows, cut-off parts and text, and kept 10.</p>
+
+<h3>"Measure, don't guess"</h3>
+<p>Put that sentence in the prompt. Kimi is strong at anything it can measure: grip offsets, frame times, VRAM, triangle counts, playtests. Without it, it guessed: the sword was turned around an assumed pivot and ended up 25 cm from the hand. With measured numbers to hit, it fixed it.</p>
+
+<h3>Check every visual result yourself</h3>
+<p>Kimi's own visual reviews passed a boss with a hole in its back, oversaturated colours, a tiny hero and a sword through the hood. To close the hole, it once turned the whole boss into a plain green ball and accepted that. Almost every visual problem in the game was found by me, not by Kimi. Look at the renders and play the game.</p>
+
+<h3>Draw three-quarter concepts for image-to-3D</h3>
+<p>Image-to-3D builds exactly what the picture shows. My first tree concept was a flat front view, and TRELLIS.2 made a tree that was twice as wide as it was deep, a slab. A three-quarter view with a clearly round shape fixed it. Use square 1024 × 1024 images, and check the mesh: depth at least 80% of the width.</p>
+
+<h3>More that helped</h3>
+<ul>
+  <li><strong>Name the exact error and file</strong> when something breaks. "Fix the MCP connection" made Kimi break the one server that worked.</li>
+  <li><strong>Add rules against "fixing" your setup:</strong> no installs, no restarts, no edits to custom nodes; stop and report if blocked. See the <a href="prompts.html#rules">rules block</a>.</li>
+  <li><strong>Detail you'll throw away can still hang the pipeline.</strong> TRELLIS.2 at 1536 got stuck on the cottage for over an hour; at 1024 it took about 10 minutes.</li>
+  <li><strong>Compare benchmarks fairly.</strong> ComfyUI caches nodes, so a second run can look faster than it is. Ask Kimi to compare cached-node counts.</li>
+  <li><strong>Ask for an automated playtest.</strong> A bot that plays the level with real inputs catches broken gameplay after every change.</li>
+</ul>
+
+<h2 id="links">Links</h2>
+<ul>
+  <li><a href="https://www.kimi.ai/blog/kimi-k3-1-pro">Kimi K3.1 Pro</a> (Moonshot AI tech blog)</li>
+  <li><a href="https://www.kimi.ai/code">Kimi Code</a> · <a href="https://moonshotai.github.io/kimi-code/">Kimi Code CLI docs</a> · <a href="https://www.kimi.com/membership/pricing">Kimi plans</a></li>
+  <li><a href="https://github.com/artokun/comfyui-mcp">comfyui-mcp</a> · <a href="https://github.com/ahujasid/blender-mcp">MCP for Blender</a> · <a href="https://github.com/Coding-Solo/godot-mcp">Godot MCP</a></li>
+  <li>My channel: <a href="https://www.youtube.com/@PixelArtistry_">youtube.com/@PixelArtistry_</a></li>
+</ul>
+<h3>My other repos</h3>
+<ul>
+  <li><a href="https://github.com/pixelartistry/PixelArtistry-Animated-Characters">PixelArtistry-Animated-Characters</a>: one image to a game-ready, animatable low-poly character (the base of Kimi's workflows).</li>
+  <li><a href="https://github.com/pixelartistry/PixelArtistry-Watertight-Meshes">PixelArtistry-Watertight-Meshes</a>: image to watertight and game-ready 3D with Pixal3D / TRELLIS.2.</li>
+  <li><a href="https://github.com/pixelartistry/PixelArtistry-UltraTex">PixelArtistry-UltraTex</a>: local AI textures from one reference image.</li>
+  <li><a href="https://github.com/pixelartistry/PixelArtistry-Image-to-3D-Print">PixelArtistry-Image-to-3D-Print</a>: one image to a print-ready 3D model.</li>
+  <li><a href="https://github.com/pixelartistry/PixelArtistry-Pixal3D-Multiview">PixelArtistry-Pixal3D-Multiview</a>: prompt to turnaround sheet to 3D mesh.</li>
+  <li><a href="https://github.com/pixelartistry/PixelArtistry-MoCapAnything">PixelArtistry-MoCapAnything</a>: video to animation, locally.</li>
+</ul>
+<p class="note">The video is sponsored by Moonshot AI. This guide and my opinions are my own.</p>
+</main>
+
+<footer><div class="inner">
+  Made by <a href="https://www.youtube.com/@PixelArtistry_">PixelArtistry</a> · <a href="https://github.com/pixelartistry/PixelArtistry-Kimi-Game-Pipeline">GitHub repo</a>
+</div></footer>
+</body>
+</html>

@@ -1,0 +1,69 @@
+{
+  "1": {
+    "class_type": "UNETLoader",
+    "inputs": {
+      "unet_name": "qwen_image_2.1_int8_convrot.safetensors",
+      "weight_dtype": "default"
+    }
+  },
+  "2": {
+    "class_type": "CLIPLoader",
+    "inputs": {
+      "clip_name": "qwen3vl_8b_int8_convrot.safetensors",
+      "type": "qwen_image"
+    }
+  },
+  "3": {
+    "class_type": "VAELoader",
+    "inputs": {
+      "vae_name": "qwen_image_2.1_vae_bf16.safetensors"
+    }
+  },
+  "4": {
+    "class_type": "TextEncodeQwenImage21",
+    "inputs": {
+      "clip": ["2", 0],
+      "prompt": "Cozy hand-painted stylized fantasy game asset, chunky simplified silhouette, softly rounded low-poly forms with broad bevels, clean hand-painted color blocking and subtle visible brush variation, lush yellow-green and moss tones, warm cream and honey-brown materials, restrained teal shadows and small coral accents, matte surfaces, appealing miniature-diorama proportions, readable from a distant isometric game camera, charming rather than realistic, a plump moss-green slime creature with a rounded pear-shaped body, two tiny dark eyes, one small leaf growing from its crown, subtle lime painted highlights and deeper teal-green underside, soft semi-matte jelly surface, extremely simple friendly silhouette, no limbs and no small accessories. One single isolated object, fully visible with generous margin, three-quarter front view, orthographic-like modeling reference, plain uniform light warm-gray background, soft even ambient lighting, no cast shadow, no ground shadow, no floor plane, no text, no logo, no watermark, no extra objects, no cropped parts, no surrounding scenery.",
+      "negative_prompt": "Photorealistic materials, thin delicate parts, extra objects, cropped object, text, logos, watermark, dramatic lighting, cast shadows, ground shadow, surrounding scenery.",
+      "resolution": 1024,
+      "images": {}
+    }
+  },
+  "5": {
+    "class_type": "EmptyLatentImage",
+    "inputs": {
+      "width": 1024,
+      "height": 1024,
+      "batch_size": 1
+    }
+  },
+  "6": {
+    "class_type": "KSampler",
+    "inputs": {
+      "model": ["1", 0],
+      "positive": ["4", 0],
+      "negative": ["4", 1],
+      "latent_image": ["5", 0],
+      "seed": 2026110201,
+      "steps": 25,
+      "cfg": 1.0,
+      "sampler_name": "euler",
+      "scheduler": "simple",
+      "denoise": 1.0
+    }
+  },
+  "7": {
+    "class_type": "VAEDecode",
+    "inputs": {
+      "samples": ["6", 0],
+      "vae": ["3", 0]
+    }
+  },
+  "8": {
+    "class_type": "SaveImage",
+    "inputs": {
+      "images": ["7", 0],
+      "filename_prefix": "Briarwood/01_moss_slime"
+    }
+  }
+}

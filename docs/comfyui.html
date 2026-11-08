@@ -1,0 +1,122 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>ComfyUI Requirements · Kimi Game Pipeline</title>
+<meta name="description" content="Custom nodes, models and workflows for the local concept-to-3D part of the Kimi game pipeline.">
+<link rel="stylesheet" href="assets/style.css">
+</head>
+<body>
+<header class="site"><div class="inner">
+  <a class="brand" href="index.html">Pixel<span>Artistry</span> · Kimi Game Pipeline</a>
+  <nav>
+    <a href="index.html">Overview</a>
+    <a href="setup.html">Kimi &amp; MCP setup</a>
+    <a href="comfyui.html" aria-current="page">ComfyUI</a>
+    <a href="prompts.html">Prompts</a>
+    <a href="tips.html">Tips &amp; links</a>
+  </nav>
+</div></header>
+
+<main>
+<h1>ComfyUI: nodes, models and workflows</h1>
+<p class="lead">Everything the four workflows in this repo need, read from every node in the workflow files. Tested on ComfyUI 0.39.2 (ComfyUI-Easy-Install, Python 3.12, PyTorch 2.8 + CUDA 12.8) on an RTX 5080.</p>
+
+<div class="note"><strong>Shortcut:</strong> the two 3D workflows are Kimi's versions of my <code>05p</code> prop workflow. My <a href="https://github.com/pixelartistry/PixelArtistry-Animated-Characters">Animated-Characters installer</a> installs every node pack and model they need, at the tested versions. Run it first, then add the Qwen models below.</div>
+
+<h2 id="workflows">The workflows</h2>
+<p>In the <a href="https://github.com/pixelartistry/PixelArtistry-Kimi-Game-Pipeline/tree/main/workflows"><code>workflows</code></a> folder. Copy them into <code>ComfyUI\user\default\workflows\Kimi\</code>, so they show up in the workflow sidebar.</p>
+<div class="table-wrap"><table>
+  <tr><th>File</th><th>Step</th><th>What it does</th></tr>
+  <tr><td><code>Kimi_Concept_QwenImage21_API.json</code></td><td>Concept images</td><td>Qwen Image 2.1 text-to-image, 1024 × 1024. Saved in API format (the way Kimi submits jobs); drag it into ComfyUI to open it.</td></tr>
+  <tr><td><code>Kimi_T3e_Rowan_QwenEdit2511.json</code></td><td>Hero T-pose</td><td>Qwen Image Edit 2511 with the 4-step Lightning LoRA: turns the approved hero concept into a T-pose without changing the character.</td></tr>
+  <tr><td><code>Kimi_LowPoly_GameAsset.json</code></td><td>Image to 3D (Pixal3D)</td><td>Concept image → Pixal3D → watertight → low-poly (4k triangles) → normal-map bake → UltraTex textures → one GLB.</td></tr>
+  <tr><td><code>Kimi_LowPoly_GameAsset_TRELLIS2.json</code></td><td>Image to 3D (TRELLIS.2)</td><td>The same chain with TRELLIS.2 geometry, the fast sampling profile, 1024 resolution and a 6k triangle budget. I used this one for most props and the hero.</td></tr>
+</table></div>
+<p>In both 3D workflows, paste your Blender path into the <strong>Blender path</strong> node (forward slashes, e.g. <code>D:/Blender/blender.exe</code>) and load your image in <strong>Load Image</strong>. Use square 1024 × 1024 input images.</p>
+
+<h3 id="changes">What Kimi changed in my workflow</h3>
+<p>Kimi started from <code>PixelArtistry_05p_Image_to_LowPoly_Prop_UltraTex</code>, ran it unchanged as a baseline, then tested one change at a time. The result was about 19% faster on the fence (517 s → 421 s), with the same quality and one clean piece.</p>
+<div class="table-wrap"><table>
+  <tr><th>Setting</th><th>My original (05p)</th><th>Kimi_LowPoly_GameAsset</th><th>Why</th></tr>
+  <tr><td>LODTailor high-poly cap (step 4)</td><td>6,000,000 tris</td><td><strong>50,000 tris</strong></td><td>A game prop doesn't need millions of faces before it's reduced to a few thousand.</td></tr>
+  <tr><td>WTiVo <code>final_res</code></td><td>1536</td><td><strong>1024</strong></td><td>Less detail that would be thrown away later anyway.</td></tr>
+  <tr><td>Final low-poly target</td><td>2,000 tris (2k)</td><td><strong>4,000 tris (4k)</strong></td><td>Thin parts like fence beams collapse at 2k.</td></tr>
+  <tr><td>UltraTex textures</td><td>2048</td><td>2048 (unchanged)</td><td></td></tr>
+</table></div>
+<p>The TRELLIS.2 version adds: TRELLIS.2 instead of Pixal3D, the fast sampling profile (12 structure / 12 shape / 8 upsample steps), upsample, Quad Reconstruct and WTiVo all at <strong>1024</strong>, and a 6,000-triangle final budget. The 1024 setting matters: at 1536, TRELLIS.2 got stuck on the cottage for over an hour.</p>
+<div class="note">The note nodes inside these two workflows still include a "settings by VRAM" table from my original pack, with a 6 GB row. My own measurements for this project were higher; see the <a href="index.html#hardware">hardware note</a>.</div>
+
+<h2 id="nodes">Custom node packs</h2>
+<p>Most nodes in these workflows are built into ComfyUI. You only need these packs:</p>
+<div class="table-wrap"><table>
+  <tr><th>Pack</th><th>Nodes used</th><th>Licence</th></tr>
+  <tr><td><a href="https://github.com/Mstafa-awad/WTiVo-WatertightVoxel-ComfyuiNode">WTiVo Watertight Voxel</a></td><td><code>WTiVoNativeMeshToMesh</code></td><td>GPL-3.0</td></tr>
+  <tr><td><a href="https://github.com/Mstafa-awad/WTiVo-FastMergeByDistance">WTiVo Fast Merge by Distance</a></td><td><code>WTiVoFastMergeByDistance</code></td><td>MIT</td></tr>
+  <tr><td><a href="https://github.com/Mstafa-awad/LODTailor-The-Mesh-Trimmer-ComfyuiNode">LODTailor Mesh Trimmer</a></td><td><code>LODTailorTheMeshTrimmer</code></td><td>GPL-3.0</td></tr>
+  <tr><td><a href="https://github.com/Mstafa-awad/LODTailor-Bake-Forger">LODTailor Bake Forger</a></td><td><code>LODTailorBakeForger</code></td><td>GPL-3.0</td></tr>
+  <tr><td><a href="https://github.com/Mstafa-awad/ComfyUI-Mesh-Quad-Reconstruct">Mesh Quad Reconstruct</a></td><td><code>MeshReconstructWithQuad</code></td><td>MIT</td></tr>
+  <tr><td><a href="https://github.com/Mstafa-awad/ComfyUI-Memory-Cleaner">Memory Cleaner</a></td><td><code>MemoryCleaner</code></td><td>GPL-3.0 (licence file)</td></tr>
+  <tr><td><a href="https://github.com/Mstafa-awad/UltraTex-ComfyUI-nodes">UltraTex ComfyUI nodes</a> (low-VRAM GGUF version), installed as folder <code>comfyui_ultratex_modular</code></td><td>all <code>UTX…</code> nodes</td><td>GPL-3.0</td></tr>
+  <tr><td><a href="https://github.com/city96/ComfyUI-GGUF">ComfyUI-GGUF</a></td><td><code>UnetLoaderGGUF</code>, <code>CLIPLoaderGGUF</code></td><td>Apache-2.0</td></tr>
+  <tr><td><a href="https://github.com/visualbruno/ComfyUI-Trellis2">visualbruno/ComfyUI-Trellis2</a></td><td>no nodes in these workflows; provides the CuMesh wheels that Quad Reconstruct needs</td><td>see repo</td></tr>
+</table></div>
+<p>The WTiVo, LODTailor, Quad Reconstruct, Memory Cleaner and UltraTex GGUF packs are by <strong>MostAadTech</strong> (GitHub <a href="https://github.com/Mstafa-awad">Mstafa-awad</a>, <a href="https://www.youtube.com/@MostAadTech">YouTube</a>). They aren't in the ComfyUI Manager, so install them with <code>git clone</code> or my installer. Both LODTailor nodes run <strong>Blender</strong> in the background, so you need a Blender install (a clean portable one without add-ons works best).</p>
+<p><strong>Built into ComfyUI</strong> (update to a recent version): TRELLIS.2 and Pixal3D (since v0.34), MoGe (v0.22), background removal with BiRefNet (v0.21), Qwen Image 2.1 (v0.37), Qwen Image Edit, the mesh, UV, bake and switch nodes. Official guides: <a href="https://docs.comfy.org/tutorials/3d/trellis2">TRELLIS.2</a>, <a href="https://docs.comfy.org/tutorials/3d/pixal3d">Pixal3D</a>, <a href="https://docs.comfy.org/tutorials/image/qwen/qwen-image-2-1">Qwen Image 2.1</a>.</p>
+
+<h2 id="models">Models</h2>
+<h3>Image to 3D (both <code>Kimi_LowPoly_GameAsset</code> workflows)</h3>
+<div class="table-wrap"><table>
+  <tr><th>File</th><th>Folder in <code>ComfyUI\models\</code></th><th>Source</th><th>Licence</th></tr>
+  <tr><td><code>trellis_2_int8_convrot.safetensors</code></td><td><code>diffusion_models</code></td><td><a href="https://huggingface.co/Comfy-Org/TRELLIS.2">Comfy-Org/TRELLIS.2</a></td><td>MIT</td></tr>
+  <tr><td><code>pixal3d_int8_convrot.safetensors</code></td><td><code>diffusion_models</code></td><td><a href="https://huggingface.co/Comfy-Org/Pixal3D">Comfy-Org/Pixal3D</a></td><td>MIT</td></tr>
+  <tr><td><code>trellis_2_shape_vae_bf16.safetensors</code>, <code>trellis_2_texture_vae_bf16.safetensors</code></td><td><code>vae</code></td><td><a href="https://huggingface.co/Comfy-Org/Pixal3D">Comfy-Org/Pixal3D</a></td><td>MIT</td></tr>
+  <tr><td><code>dino_v3_L_naf_fp32.safetensors</code></td><td><code>clip_vision</code></td><td><a href="https://huggingface.co/Comfy-Org/Pixal3D">Comfy-Org/Pixal3D</a></td><td>DINOv3 licence (Meta)</td></tr>
+  <tr><td><code>moge_2_vitl_normal_fp16.safetensors</code></td><td><code>geometry_estimation</code></td><td><a href="https://huggingface.co/Comfy-Org/MoGe">Comfy-Org/MoGe</a></td><td>MIT</td></tr>
+  <tr><td><code>birefnet.safetensors</code></td><td><code>background_removal</code></td><td><a href="https://huggingface.co/Comfy-Org/BiRefNet">Comfy-Org/BiRefNet</a></td><td>MIT</td></tr>
+  <tr><td><code>flux-2-klein-base-9b-Q4_0.gguf</code></td><td><code>diffusion_models</code></td><td><a href="https://huggingface.co/unsloth/FLUX.2-klein-base-9B-GGUF">unsloth/FLUX.2-klein-base-9B-GGUF</a></td><td><strong>FLUX Non-Commercial</strong></td></tr>
+  <tr><td><code>Qwen3-8B-Q4_K_M.gguf</code></td><td><code>text_encoders</code></td><td><a href="https://huggingface.co/unsloth/Qwen3-8B-GGUF">unsloth/Qwen3-8B-GGUF</a></td><td>Apache-2.0</td></tr>
+  <tr><td><code>flux2-vae.safetensors</code></td><td><code>vae</code></td><td><a href="https://huggingface.co/Comfy-Org/flux2-dev/resolve/main/split_files/vae/flux2-vae.safetensors">Comfy-Org/flux2-dev</a></td><td>BFL licence</td></tr>
+  <tr><td><code>ultratex_flux2.safetensors</code></td><td><code>loras</code></td><td><a href="https://www.modelscope.ai/models/Yibo-Zhang/UltraTex">ModelScope Yibo-Zhang/UltraTex</a>: <code>flux2/lora/dit_lora.safetensors</code>, <strong>rename</strong></td><td>see below</td></tr>
+  <tr><td><code>ultratex_flux2_mr.safetensors</code></td><td><code>loras</code></td><td>same page: <code>flux2_mr/lora/dit_lora.safetensors</code>, <strong>rename</strong></td><td>see below</td></tr>
+  <tr><td><code>ultratex_flux2_decoder.pt</code></td><td><code>ultratex</code> (create it)</td><td>same page: <code>flux2/decoder.pt</code></td><td>see below</td></tr>
+</table></div>
+<p>Both UltraTex LoRAs are called <code>dit_lora.safetensors</code> on ModelScope. Rename each one right after downloading, or the second overwrites the first.</p>
+
+<h3>Concept images (<code>Kimi_Concept_QwenImage21_API.json</code>)</h3>
+<div class="table-wrap"><table>
+  <tr><th>File</th><th>Folder</th><th>Source</th><th>Licence</th></tr>
+  <tr><td><code>qwen_image_2.1_int8_convrot.safetensors</code></td><td><code>diffusion_models</code></td><td rowspan="3"><a href="https://huggingface.co/Comfy-Org/Qwen-Image-2.1">Comfy-Org/Qwen-Image-2.1</a></td><td rowspan="3"><strong>Qwen Research License</strong></td></tr>
+  <tr><td><code>qwen3vl_8b_int8_convrot.safetensors</code></td><td><code>text_encoders</code></td></tr>
+  <tr><td><code>qwen_image_2.1_vae_bf16.safetensors</code></td><td><code>vae</code></td></tr>
+</table></div>
+
+<h3>Hero T-pose (<code>Kimi_T3e_Rowan_QwenEdit2511.json</code>)</h3>
+<div class="table-wrap"><table>
+  <tr><th>File</th><th>Folder</th><th>Source</th><th>Licence</th></tr>
+  <tr><td><code>qwen-image-edit-2511-Q6_K.gguf</code></td><td><code>unet</code> or <code>diffusion_models</code></td><td><a href="https://huggingface.co/unsloth/Qwen-Image-Edit-2511-GGUF">unsloth/Qwen-Image-Edit-2511-GGUF</a></td><td>Apache-2.0</td></tr>
+  <tr><td><code>Qwen-Image-Edit-2511-Lightning-4steps-V1.0-bf16.safetensors</code></td><td><code>loras</code></td><td><a href="https://huggingface.co/lightx2v/Qwen-Image-Edit-2511-Lightning">lightx2v/Qwen-Image-Edit-2511-Lightning</a></td><td>Apache-2.0</td></tr>
+  <tr><td><code>qwen_2.5_vl_7b_fp8_scaled.safetensors</code></td><td><code>text_encoders</code></td><td rowspan="2"><a href="https://huggingface.co/Comfy-Org/Qwen-Image_ComfyUI">Comfy-Org/Qwen-Image_ComfyUI</a></td><td rowspan="2">Apache-2.0</td></tr>
+  <tr><td><code>qwen_image_vae.safetensors</code></td><td><code>vae</code></td></tr>
+</table></div>
+<div class="todo">The workflow loads <code>qwen-image-edit-2511-Q6_K.gguf</code> and <code>Qwen3-8B-Q4_K_M.gguf</code>, but the main models folder on my PC has the Q8_0 versions. Check which files you actually ran (they may be in a linked model folder) and fix the names here if needed.</div>
+
+<h2 id="licences">Licences that matter</h2>
+<ul>
+  <li><strong>Qwen Image 2.1</strong> is under the <em>Qwen Research License Agreement</em>: non-commercial research and evaluation only. Commercial use needs a separate licence from Alibaba. If you want to sell your game, check this before using its concept images, or use a model with a commercial licence for the concepts.</li>
+  <li><strong>FLUX.2 [klein] base 9B</strong>, which UltraTex uses for the textures, is under the <em>FLUX Non-Commercial License</em> by Black Forest Labs. Read the licence for what it says about outputs before using them commercially.</li>
+  <li><strong>UltraTex weights:</strong> ModelScope lists them as MIT, but they are adapters for the FLUX.2 model above, so its licence applies too.</li>
+  <li><strong>DINOv3</strong> (used by Pixal3D and TRELLIS.2 conditioning) has its own licence from Meta.</li>
+  <li><strong>Qwen Image Edit 2511</strong>, TRELLIS.2, Pixal3D, MoGe and BiRefNet are Apache-2.0 or MIT.</li>
+  <li>MostAadTech's node packs are mostly GPL-3.0. That matters if you redistribute the nodes, not for the meshes you make with them.</li>
+</ul>
+<p>This is a summary, not legal advice. Read each licence yourself before commercial use.</p>
+</main>
+
+<footer><div class="inner">
+  Made by <a href="https://www.youtube.com/@PixelArtistry_">PixelArtistry</a> · <a href="https://github.com/pixelartistry/PixelArtistry-Kimi-Game-Pipeline">GitHub repo</a>
+</div></footer>
+<script src="assets/copy.js"></script>
+</body>
+</html>
