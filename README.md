@@ -79,7 +79,7 @@ The game project and the generated assets are not part of this repo; only screen
 
 ## Licences
 
-The models have their own licences. Two matter for commercial use: **Qwen Image 2.1** is under the Qwen Research License (non-commercial), and **FLUX.2 [klein] base 9B**, used by UltraTex, is under the FLUX Non-Commercial License. Details are on the [ComfyUI page](https://pixelartistry.github.io/PixelArtistry-Kimi-Game-Pipeline/comfyui.html#licences).
+The models have their own licences. The weights of **Qwen Image 2.1** (Qwen Research License) and **FLUX.2 [klein] base 9B**, used by UltraTex (FLUX Non-Commercial License), are non-commercial, but the images and textures you generate can be used commercially: BFL's licence says so, and Qwen has said on X that outputs aren't part of the licensed materials. Details are on the [ComfyUI page](https://pixelartistry.github.io/PixelArtistry-Kimi-Game-Pipeline/comfyui.html#licences).
 
 Node packs by **MostAadTech** ([GitHub](https://github.com/Mstafa-awad) · [YouTube](https://www.youtube.com/@MostAadTech)): WTiVo, LODTailor, Quad Reconstruct, Memory Cleaner and the UltraTex GGUF nodes. Please support him.
 
