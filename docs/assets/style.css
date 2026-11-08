@@ -118,6 +118,13 @@ th { background: var(--surface-2); }
 .card { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 12px 14px; }
 .card h3 { margin-top: 0; }
 
+.hero-shot { margin: 1em 0 0.5em; }
+.hero-shot img, .gallery img { width: 100%; height: auto; display: block; border-radius: 8px; border: 1px solid var(--border); }
+.gallery { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 14px; margin: 1em 0; }
+figure { margin: 0; }
+figcaption { font-size: 14px; color: var(--muted); margin-top: 6px; }
+.gallery .wide { grid-column: 1 / -1; }
+
 ol.steps > li { margin-bottom: 0.6em; }
 .toc { background: var(--surface); border: 1px solid var(--border); border-radius: 8px; padding: 10px 16px; }
 .toc ol { margin: 0.3em 0; padding-left: 1.3em; }

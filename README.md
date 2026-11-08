@@ -8,6 +8,16 @@ Rebuild the setup from my video **"I Created My Own Game with Kimi K3.1 Using On
 ▶ **Full guide:** https://pixelartistry.github.io/PixelArtistry-Kimi-Game-Pipeline/
 ▶ **Video:** TODO: add the video link · [PixelArtistry on YouTube](https://www.youtube.com/@PixelArtistry_)
 
+![The finished game: Rowan in the village of Briarwood](docs/images/final-01-village.jpg)
+
+## From concept to game
+
+| Concept | 3D props | First level | Finished game |
+|---|---|---|---|
+| ![Concept: cottage](docs/images/wip-02-concept-cottage.jpg) | ![Props lineup in Blender](docs/images/wip-05-props-lineup.jpg) | ![First level](docs/images/wip-06-first-level.jpg) | ![Boss fight](docs/images/final-07-boss-phase-2.jpg) |
+
+More work-in-progress and final screenshots are in the [guide](https://pixelartistry.github.io/PixelArtistry-Kimi-Game-Pipeline/#screenshots).
+
 ## The pipeline
 
 ```
@@ -65,7 +75,7 @@ Kimi started from my `PixelArtistry_05p_Image_to_LowPoly_Prop_UltraTex` workflow
 | WTiVo `final_res` | 1536 | **1024** |
 | Final low-poly target | 2k tris | **4k tris** |
 
-The game project and the generated assets are not part of this repo.
+The game project and the generated assets are not part of this repo; only screenshots are (`docs/images`).
 
 ## Licences
 
